@@ -9,4 +9,9 @@ use \Spryker\Zed\Stock\Business\StockFacadeInterface as SprykerStockFacadeInterf
  */
 interface StockFacadeInterface extends SprykerStockFacadeInterface
 {
+    /**
+     * @return array
+     * @throws \Spryker\Zed\Kernel\Exception\Container\ContainerKeyNotFoundException
+     */
+    public function getSimpleDataStores(): array;
 }
