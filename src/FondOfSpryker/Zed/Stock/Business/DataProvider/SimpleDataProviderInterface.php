@@ -12,7 +12,7 @@ interface SimpleDataProviderInterface
     /**
      * @param  \FondOfSpryker\Zed\Stock\Communication\Dependency\DataProviderInterface  $dataProvider
      */
-    public function regsiterDataProvider(DataProviderInterface $dataProvider): void;
+    public function registerDataProvider(DataProviderInterface $dataProvider): void;
 
     /**
      * @param  string  $dataType

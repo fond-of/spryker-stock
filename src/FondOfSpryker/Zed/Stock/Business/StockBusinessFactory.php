@@ -4,12 +4,16 @@ namespace FondOfSpryker\Zed\Stock\Business;
 
 use FondOfSpryker\Zed\Stock\Business\DataProvider\SimpleDataProvider;
 use FondOfSpryker\Zed\Stock\Business\DataProvider\SimpleDataProviderInterface;
+use FondOfSpryker\Zed\Stock\Business\Handler\StoreToWarehouseHandler;
 use FondOfSpryker\Zed\Stock\StockDependencyProvider;
 use \Spryker\Zed\Stock\Business\StockBusinessFactory as SprykerStockBusinessFactory;
 use Spryker\Zed\Stock\Dependency\Facade\StockToStoreFacadeBridge;
 
 /**
  * @method \FondOfSpryker\Zed\Stock\StockConfig getConfig()
+ * @method \Spryker\Zed\Stock\Persistence\StockQueryContainerInterface getQueryContainer()
+ * @method \Spryker\Zed\Stock\Persistence\StockRepositoryInterface getRepository()
+ * @method \Spryker\Zed\Stock\Persistence\StockEntityManagerInterface getEntityManager()
  */
 class StockBusinessFactory extends SprykerStockBusinessFactory
 {
@@ -38,5 +42,13 @@ class StockBusinessFactory extends SprykerStockBusinessFactory
     public function createSimpleDataProvider(): SimpleDataProviderInterface
     {
         return new SimpleDataProvider($this->getSimpleDataProviderPlugins());
+    }
+    
+    public function createStoreToWarehouseHandler(){
+        return new StoreToWarehouseHandler(
+            $this->createStockUpdater(),
+            $this->getRepository(),
+            $this->getStoreFacade()
+        );
     }
 }

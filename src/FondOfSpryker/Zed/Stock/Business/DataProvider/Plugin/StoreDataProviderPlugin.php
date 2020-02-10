@@ -7,7 +7,8 @@ use Spryker\Zed\Stock\Dependency\Facade\StockToStoreFacadeInterface;
 
 class StoreDataProviderPlugin implements DataProviderInterface
 {
-    protected const DATA_TYPE = 'storeData';
+    public const DATA_TYPE = 'storeData';
+     
     /**
      * @var \Spryker\Zed\Stock\Dependency\Facade\StockToStoreFacadeInterface
      */

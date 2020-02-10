@@ -24,7 +24,7 @@ class SimpleDataProvider implements SimpleDataProviderInterface
     /**
      * @param  \FondOfSpryker\Zed\Stock\Communication\Dependency\DataProviderInterface  $dataProvider
      */
-    public function regsiterDataProvider(DataProviderInterface $dataProvider): void
+    public function registerDataProvider(DataProviderInterface $dataProvider): void
     {
         $this->dataProviderCollection[$dataProvider->getName()] = $dataProvider;
     }
@@ -36,7 +36,7 @@ class SimpleDataProvider implements SimpleDataProviderInterface
      */
     public function get(string $dataType): array
     {
-        if (!array_key_exists($dataType, $this->dataProviderCollection)) {
+        if (!is_array($this->dataProviderCollection) || !array_key_exists($dataType, $this->dataProviderCollection)) {
             throw new DataTypeNotExistsException(sprintf('No data provider found for type %s', $dataType));
         }
         return $this->dataProviderCollection[$dataType]->getDataAsArray();
@@ -55,7 +55,7 @@ class SimpleDataProvider implements SimpleDataProviderInterface
      */
     public function getRegisteredDataProviderTypesAsString(): string
     {
-        return implode('-> '.PHP_EOL, $this->getRegisteredDataProviderTypes());
+        return sprintf('-> %s', implode(PHP_EOL.'-> ', $this->getRegisteredDataProviderTypes()));
     }
 
     /**
@@ -66,7 +66,7 @@ class SimpleDataProvider implements SimpleDataProviderInterface
     protected function init(array $dataProviderCollection): void
     {
         foreach ($dataProviderCollection as $dataProvider) {
-            $this->regsiterDataProvider($dataProvider);
+            $this->registerDataProvider($dataProvider);
         }
     }
 

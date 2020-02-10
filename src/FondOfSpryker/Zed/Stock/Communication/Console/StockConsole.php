@@ -61,12 +61,16 @@ class StockConsole extends Console
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $stores = explode(',',  $input->getOption(static::OPTION_STORES));
+        $stores = explode(',',  str_replace(' ', '', $input->getOption(static::OPTION_STORES)));
         $warehouse = $input->getOption(static::OPTION_WAREHOUSE);
 
-        $output->writeln('');
+        $responseTransfer = $this->getFacade()->updateStockByConsole($warehouse, $stores);
+        
+        foreach ($responseTransfer->getMessages() as $messageTransfer){
+            $output->writeln(sprintf('%s: %s', $messageTransfer->getType(), $messageTransfer->getValue()));
+        }
 
-        return static::CODE_SUCCESS;
+        return $responseTransfer->getIsSuccessful() ? static::CODE_SUCCESS : static::CODE_ERROR;
     }
 
     /**
