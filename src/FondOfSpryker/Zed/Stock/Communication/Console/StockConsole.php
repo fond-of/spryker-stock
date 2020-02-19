@@ -22,35 +22,44 @@ class StockConsole extends Console
     private const OPTION_STORES = 'stores';
     private const OPTION_STORES_SHORT = 's';
 
+    protected $requiredClasses = [
+        'Orm/Zed/Stock/Persistence/Base/SpyStockQuery'
+    ];
+
     /**
      * @return void
      */
     protected function configure()
     {
-        $this->addOption(
-            static::OPTION_WAREHOUSE,
-            static::OPTION_WAREHOUSE_SHORT,
-            InputOption::VALUE_REQUIRED,
-            sprintf(
-                'warehouse name or id. Available warhouse: %s-> %s',
-                PHP_EOL,
-                implode(PHP_EOL.'-> ', $this->formatHelpData($this->getFacade()->getAvailableStockTypes(), ['id' => 'warehouse']))
-            )
-        );
-        $this->addOption(
-            static::OPTION_STORES,
-            static::OPTION_STORES_SHORT,
-            InputOption::VALUE_REQUIRED,
-            sprintf(
-                'store names or ids to assign, if emtpy assign to every store: %s-> %s',
-                PHP_EOL,
-                implode(PHP_EOL.'-> ', $this->formatHelpData($this->getFacade()->getSimpleDataStores(), ['id' => 'store']))
-            )
-        );
         $this->setName(static::COMMAND_NAME)
             ->setDescription(static::DESCRIPTION)
             ->addUsage(sprintf('-%s warehouse -%s store_ids', static::OPTION_WAREHOUSE_SHORT,
                 static::OPTION_STORES_SHORT));
+
+        if ($this->validateRequiredStuff()) {
+            $this->addOption(
+                static::OPTION_WAREHOUSE,
+                static::OPTION_WAREHOUSE_SHORT,
+                InputOption::VALUE_REQUIRED,
+                sprintf(
+                    'warehouse name or id. Available warhouse: %s-> %s',
+                    PHP_EOL,
+                    implode(PHP_EOL.'-> ',
+                        $this->formatHelpData($this->getFacade()->getAvailableStockTypes(), ['id' => 'warehouse']))
+                )
+            );
+            $this->addOption(
+                static::OPTION_STORES,
+                static::OPTION_STORES_SHORT,
+                InputOption::VALUE_REQUIRED,
+                sprintf(
+                    'store names or ids to assign, if emtpy assign to every store: %s-> %s',
+                    PHP_EOL,
+                    implode(PHP_EOL.'-> ',
+                        $this->formatHelpData($this->getFacade()->getSimpleDataStores(), ['id' => 'store']))
+                )
+            );
+        }
     }
 
     /**
@@ -61,12 +70,12 @@ class StockConsole extends Console
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $stores = explode(',',  str_replace(' ', '', $input->getOption(static::OPTION_STORES)));
+        $stores = explode(',', str_replace(' ', '', $input->getOption(static::OPTION_STORES)));
         $warehouse = $input->getOption(static::OPTION_WAREHOUSE);
 
         $responseTransfer = $this->getFacade()->updateStockByConsole($warehouse, $stores);
-        
-        foreach ($responseTransfer->getMessages() as $messageTransfer){
+
+        foreach ($responseTransfer->getMessages() as $messageTransfer) {
             $output->writeln(sprintf('%s: %s', $messageTransfer->getType(), $messageTransfer->getValue()));
         }
 
@@ -80,7 +89,7 @@ class StockConsole extends Console
      */
     protected function formatHelpData(array $data, array $header = []): array
     {
-        if (count($header) > 0){
+        if (count($header) > 0) {
             $header = $header + ['--' => '--------------'];
         }
         $output = [];
@@ -88,5 +97,20 @@ class StockConsole extends Console
             $output[] = sprintf('%s : %s', $key, $value);
         }
         return $output;
+    }
+
+    /**
+     * @return bool
+     */
+    protected function validateRequiredStuff(): bool
+    {
+        $path = __DIR__.'/../../../../../../../../../src';
+        foreach ($this->requiredClasses as $requiredClass) {
+            if (!file_exists(sprintf('%s/%s', $path, $requiredClass))){
+                return false;
+            }
+        }
+
+        return true;
     }
 }
