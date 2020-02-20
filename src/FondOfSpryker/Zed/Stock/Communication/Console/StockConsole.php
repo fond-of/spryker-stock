@@ -22,7 +22,8 @@ class StockConsole extends Console
     private const OPTION_STORES_SHORT = 's';
 
     protected $requiredClasses = [
-        'Orm/Zed/Stock/Persistence/Base/SpyStockQuery.php'
+        'Orm/Zed/Stock/Persistence/Base/SpyStockQuery.php',
+        'Generated/Shared/Transfer/StoreTransfer.php'
     ];
 
     /**
@@ -30,11 +31,7 @@ class StockConsole extends Console
      */
     protected function configure()
     {
-        $this->setName(static::COMMAND_NAME)
-            ->setDescription(static::DESCRIPTION)
-            ->addUsage(sprintf('-%s warehouse -%s store_ids', static::OPTION_WAREHOUSE_SHORT,
-                static::OPTION_STORES_SHORT));
-
+        $showInfo = true;
         if ($this->validateRequiredStuff()) {
             $this->addOption(
                 static::OPTION_WAREHOUSE,
@@ -58,7 +55,21 @@ class StockConsole extends Console
                         $this->formatHelpData($this->getFacade()->getSimpleDataStores(), ['id' => 'store']))
                 )
             );
+            $showInfo = false;
         }
+
+        $info = '';
+        if ($showInfo) {
+            $info = PHP_EOL.sprintf('Some generated classes are missing! Please use transfer:generate and propel:install to generate those. Missing classes: %s',
+                    implode(',', $this->requiredClasses));
+            $this->setHelp($info);
+        }
+
+        $this->setName(static::COMMAND_NAME)
+            ->setDescription(static::DESCRIPTION)
+            ->addUsage(sprintf('-%s warehouse -%s store_ids %s', static::OPTION_WAREHOUSE_SHORT,
+                static::OPTION_STORES_SHORT, $info));
+
     }
 
     /**
@@ -105,7 +116,7 @@ class StockConsole extends Console
     {
         $path = __DIR__.'/../../../../../../../../../src';
         foreach ($this->requiredClasses as $requiredClass) {
-            if (!file_exists(sprintf('%s/%s', $path, $requiredClass))){
+            if (!file_exists(sprintf('%s/%s', $path, $requiredClass))) {
                 return false;
             }
         }
