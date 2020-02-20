@@ -3,7 +3,6 @@
 namespace FondOfSpryker\Zed\Stock\Communication\Console;
 
 use Spryker\Zed\Kernel\Communication\Console\Console;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -23,7 +22,7 @@ class StockConsole extends Console
     private const OPTION_STORES_SHORT = 's';
 
     protected $requiredClasses = [
-        'Orm/Zed/Stock/Persistence/Base/SpyStockQuery'
+        'Orm/Zed/Stock/Persistence/Base/SpyStockQuery.php'
     ];
 
     /**
