@@ -2,6 +2,7 @@
 
 namespace FondOfSpryker\Zed\Stock\Communication\Console;
 
+use Exception;
 use Spryker\Zed\Kernel\Communication\Console\Console;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -70,7 +71,7 @@ class StockConsole extends Console
                 ->setDescription(static::DESCRIPTION)
                 ->addUsage(sprintf('-%s warehouse -%s store_ids %s', static::OPTION_WAREHOUSE_SHORT,
                     static::OPTION_STORES_SHORT, $info));
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Prevent errors on ci run because no DB connection
         }
     }
