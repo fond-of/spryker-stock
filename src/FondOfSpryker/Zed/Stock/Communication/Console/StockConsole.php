@@ -2,6 +2,7 @@
 
 namespace FondOfSpryker\Zed\Stock\Communication\Console;
 
+use Exception;
 use Spryker\Zed\Kernel\Communication\Console\Console;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -31,45 +32,48 @@ class StockConsole extends Console
      */
     protected function configure()
     {
-        $showInfo = true;
-        if ($this->validateRequiredStuff()) {
-            $this->addOption(
-                static::OPTION_WAREHOUSE,
-                static::OPTION_WAREHOUSE_SHORT,
-                InputOption::VALUE_REQUIRED,
-                sprintf(
-                    'warehouse name or id. Available warhouse: %s-> %s',
-                    PHP_EOL,
-                    implode(PHP_EOL.'-> ',
-                        $this->formatHelpData($this->getFacade()->getAvailableStockTypes(), ['id' => 'warehouse']))
-                )
-            );
-            $this->addOption(
-                static::OPTION_STORES,
-                static::OPTION_STORES_SHORT,
-                InputOption::VALUE_REQUIRED,
-                sprintf(
-                    'store names or ids to assign, if emtpy assign to every store: %s-> %s',
-                    PHP_EOL,
-                    implode(PHP_EOL.'-> ',
-                        $this->formatHelpData($this->getFacade()->getSimpleDataStores(), ['id' => 'store']))
-                )
-            );
-            $showInfo = false;
+        try {
+            $showInfo = true;
+            if ($this->validateRequiredStuff()) {
+                $this->addOption(
+                    static::OPTION_WAREHOUSE,
+                    static::OPTION_WAREHOUSE_SHORT,
+                    InputOption::VALUE_REQUIRED,
+                    sprintf(
+                        'warehouse name or id. Available warhouse: %s-> %s',
+                        PHP_EOL,
+                        implode(PHP_EOL.'-> ',
+                            $this->formatHelpData($this->getFacade()->getAvailableStockTypes(), ['id' => 'warehouse']))
+                    )
+                );
+                $this->addOption(
+                    static::OPTION_STORES,
+                    static::OPTION_STORES_SHORT,
+                    InputOption::VALUE_REQUIRED,
+                    sprintf(
+                        'store names or ids to assign, if emtpy assign to every store: %s-> %s',
+                        PHP_EOL,
+                        implode(PHP_EOL.'-> ',
+                            $this->formatHelpData($this->getFacade()->getSimpleDataStores(), ['id' => 'store']))
+                    )
+                );
+                $showInfo = false;
+            }
+
+            $info = '';
+            if ($showInfo) {
+                $info = PHP_EOL.sprintf('Some generated classes are missing! Please use transfer:generate and propel:install to generate those. Missing classes: %s',
+                        implode(',', $this->requiredClasses));
+                $this->setHelp($info);
+            }
+
+            $this->setName(static::COMMAND_NAME)
+                ->setDescription(static::DESCRIPTION)
+                ->addUsage(sprintf('-%s warehouse -%s store_ids %s', static::OPTION_WAREHOUSE_SHORT,
+                    static::OPTION_STORES_SHORT, $info));
+        } catch (Exception $e) {
+            // Prevent errors on ci run because no DB connection
         }
-
-        $info = '';
-        if ($showInfo) {
-            $info = PHP_EOL.sprintf('Some generated classes are missing! Please use transfer:generate and propel:install to generate those. Missing classes: %s',
-                    implode(',', $this->requiredClasses));
-            $this->setHelp($info);
-        }
-
-        $this->setName(static::COMMAND_NAME)
-            ->setDescription(static::DESCRIPTION)
-            ->addUsage(sprintf('-%s warehouse -%s store_ids %s', static::OPTION_WAREHOUSE_SHORT,
-                static::OPTION_STORES_SHORT, $info));
-
     }
 
     /**
