@@ -43,12 +43,7 @@ class StockConsole extends Console
                 static::OPTION_STORES,
                 static::OPTION_STORES_SHORT,
                 InputOption::VALUE_REQUIRED,
-                sprintf(
-                    'store names or ids to assign, if emtpy assign to every store: %s-> %s',
-                    PHP_EOL,
-                    implode(PHP_EOL.'-> ',
-                        $this->formatHelpData($this->getFacade()->getSimpleDataStores(), ['id' => 'store']))
-                )
+                'store names or ids to assign'
             );
             $showInfo = false;
         }
